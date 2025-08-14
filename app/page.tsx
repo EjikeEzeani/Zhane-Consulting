@@ -368,6 +368,48 @@ export default function ZhaneConsultingIDOPlatform() {
                 </div>
               </div>
             </div>
+
+            {/* Family Prosperity Section */}
+            <div className="bg-gradient-to-r from-slate-900 to-emerald-900/20 rounded-lg p-6 border border-emerald-800/30 relative overflow-hidden">
+              <div className="grid grid-cols-2 gap-8 items-center">
+                <div>
+                  <h3 className="text-2xl font-serif font-bold text-white mb-4">
+                    Securing Prosperity for Five Generations
+                  </h3>
+                  <p className="text-slate-300 mb-4">
+                    At Zhane Consulting Shares, we believe in building wealth that lasts. Our ZCS token represents more
+                    than an investment—it's a legacy for your children, grandchildren, great-grandchildren, and beyond.
+                  </p>
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                      <span className="text-slate-300 text-sm">Generational wealth building strategies</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                      <span className="text-slate-300 text-sm">Family-focused investment planning</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                      <span className="text-slate-300 text-sm">Long-term value preservation</span>
+                    </div>
+                  </div>
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">Start Your Family's Legacy</Button>
+                </div>
+                <div className="relative">
+                  <div className="rounded-lg overflow-hidden border-2 border-emerald-600/30 shadow-2xl">
+                    <img
+                      src="/five-generation-family.png"
+                      alt="Happy five-generation family celebrating financial success together"
+                      className="w-full h-64 object-cover"
+                    />
+                  </div>
+                  <div className="absolute -bottom-4 -right-4 bg-emerald-600 text-white px-4 py-2 rounded-lg shadow-lg">
+                    <span className="text-sm font-medium">5 Generations Strong</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </main>
 

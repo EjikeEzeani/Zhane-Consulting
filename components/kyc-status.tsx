@@ -50,15 +50,9 @@ export function KYCStatus({ status, tier }: KYCStatusProps) {
   const Icon = config.icon
 
   const tierLimits = {
-<<<<<<< HEAD
     1: { max: "1,000 NAIRA", features: ["Basic verification", "Standard allocation"] },
     2: { max: "10,000 NAIRA", features: ["Enhanced verification", "Priority allocation", "Bonus rewards"] },
     3: { max: "50,000 NAIRA", features: ["Premium verification", "Maximum allocation", "VIP benefits", "Early access"] },
-=======
-    1: { max: "1,000 NAIRA", features: ["Basic verification", "Standard allocation"] },
-    2: { max: "10,000 NAIRA", features: ["Enhanced verification", "Priority allocation", "Bonus rewards"] },
-    3: { max: "50,000 NAIRA", features: ["Premium verification", "Maximum allocation", "VIP benefits", "Early access"] },
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
   }
 
   return (

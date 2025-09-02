@@ -47,7 +47,6 @@ export function IDOPurchaseModal({ isOpen, onClose, nairaAmount, zcsAmount, onCo
               <X className="w-4 h-4" />
             </Button>
           </div>
-<<<<<<< HEAD
           <DialogDescription>Complete your ZCS token purchase with NAIRA</DialogDescription>
         </DialogHeader>
 
@@ -141,9 +140,6 @@ export function IDOPurchaseModal({ isOpen, onClose, nairaAmount, zcsAmount, onCo
                 </div>
                 <p className="text-sm text-slate-400 mb-4">
                   Please confirm the transaction in your wallet. This will transfer {nairaAmount} NAIRA from your wallet
-=======
-                  Please confirm the transaction in your wallet. This will transfer {NAIRAAmount} NAIRA from your wallet
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                   to purchase {zcsAmount} ZCS tokens.
                 </p>
 

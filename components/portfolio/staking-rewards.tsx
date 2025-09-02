@@ -18,9 +18,15 @@ export function StakingRewards() {
       status: "active",
     },
     {
+<<<<<<< HEAD
       name: "ZCS-NAIRA LP Pool",
       apy: "45.2%",
               staked: "2,500 ZCS + 2,125 NAIRA",
+=======
+      name: "ZCS-PUSD LP Pool",
+      apy: "45.2%",
+      staked: "2,500 ZCS + 2,125 PUSD",
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
       value: "$4,250.00",
       rewards: "89.7 ZCS",
       rewardValue: "$76.25",
@@ -32,7 +38,11 @@ export function StakingRewards() {
   const rewardHistory = [
     { date: "Jan 12", amount: "12.3 ZCS", value: "$10.46", pool: "ZCS Staking" },
     { date: "Jan 11", amount: "11.8 ZCS", value: "$10.03", pool: "ZCS Staking" },
+<<<<<<< HEAD
             { date: "Jan 10", amount: "15.4 ZCS", value: "$13.09", pool: "ZCS-NAIRA LP" },
+=======
+    { date: "Jan 10", amount: "15.4 ZCS", value: "$13.09", pool: "ZCS-PUSD LP" },
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
     { date: "Jan 9", amount: "12.1 ZCS", value: "$10.29", pool: "ZCS Staking" },
   ]
 

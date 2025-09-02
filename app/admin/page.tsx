@@ -59,9 +59,15 @@ export default function AdminDashboard() {
   ]
 
   const recentTransactions = [
+<<<<<<< HEAD
     { id: 1, user: "0x1a2b...3c4d", amount: "5,000 NAIRA", zcs: "5,882 ZCS", status: "completed", time: "2m ago" },
     { id: 2, user: "0x5e6f...7g8h", amount: "2,500 NAIRA", zcs: "2,941 ZCS", status: "pending", time: "5m ago" },
     { id: 3, user: "0x9i0j...1k2l", amount: "10,000 NAIRA", zcs: "11,765 ZCS", status: "failed", time: "8m ago" },
+=======
+    { id: 1, user: "0x1a2b...3c4d", amount: "5,000 PUSD", zcs: "5,882 ZCS", status: "completed", time: "2m ago" },
+    { id: 2, user: "0x5e6f...7g8h", amount: "2,500 PUSD", zcs: "2,941 ZCS", status: "pending", time: "5m ago" },
+    { id: 3, user: "0x9i0j...1k2l", amount: "10,000 PUSD", zcs: "11,765 ZCS", status: "failed", time: "8m ago" },
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
   ]
 
   const handleKYCApproval = (id: number, action: "approve" | "reject") => {
@@ -237,11 +243,19 @@ export default function AdminDashboard() {
 
                     <div className="space-y-3">
                       <div>
+<<<<<<< HEAD
                         <label className="text-slate-400 text-sm">Token Price (NAIRA)</label>
                         <Input type="number" defaultValue="0.85" className="bg-slate-800 border-slate-700 text-white" />
                       </div>
                       <div>
                         <label className="text-slate-400 text-sm">Hard Cap (NAIRA)</label>
+=======
+                        <label className="text-slate-400 text-sm">Token Price (PUSD)</label>
+                        <Input type="number" defaultValue="0.85" className="bg-slate-800 border-slate-700 text-white" />
+                      </div>
+                      <div>
+                        <label className="text-slate-400 text-sm">Hard Cap (PUSD)</label>
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                         <Input
                           type="number"
                           defaultValue="5000000"
@@ -249,7 +263,11 @@ export default function AdminDashboard() {
                         />
                       </div>
                       <div>
+<<<<<<< HEAD
                         <label className="text-slate-400 text-sm">Minimum Purchase (NAIRA)</label>
+=======
+                        <label className="text-slate-400 text-sm">Minimum Purchase (PUSD)</label>
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                         <Input type="number" defaultValue="100" className="bg-slate-800 border-slate-700 text-white" />
                       </div>
                     </div>

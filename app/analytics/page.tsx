@@ -24,7 +24,11 @@ export default function AnalyticsPage() {
       change: "+12.5%",
       trend: "up",
       icon: DollarSign,
+<<<<<<< HEAD
               description: "Total NAIRA invested in IDO",
+=======
+      description: "Total PUSD invested in IDO",
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
     },
     {
       title: "Active Investors",

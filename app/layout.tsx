@@ -21,7 +21,11 @@ const sourceSansPro = Source_Sans_Pro({
 
 export const metadata: Metadata = {
   title: "Zhane Consulting Shares - ZCS Token IDO Platform",
+<<<<<<< HEAD
           description: "Empowering Your Investment Journey with Trust and Transparency. Invest in ZCS tokens using NAIRA.",
+=======
+  description: "Empowering Your Investment Journey with Trust and Transparency. Invest in ZCS tokens using PUSD.",
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
   generator: "v0.app",
 }
 

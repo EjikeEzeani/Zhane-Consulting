@@ -12,7 +12,11 @@ import { IDOPurchaseModal } from "@/components/ido-purchase-modal"
 
 export default function ZhaneConsultingIDOPlatform() {
   const [activeTab, setActiveTab] = useState("Buy ZCS")
+<<<<<<< HEAD
   const [nairaAmount, setNairaAmount] = useState("0.00")
+=======
+  const [pusdAmount, setPusdAmount] = useState("0.00")
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
   const [zcsAmount, setZcsAmount] = useState("0.00")
   const [showPurchaseModal, setShowPurchaseModal] = useState(false)
   const [showTxStatus, setShowTxStatus] = useState(false)
@@ -28,20 +32,31 @@ export default function ZhaneConsultingIDOPlatform() {
   ]
 
   const recentInvestors = [
+<<<<<<< HEAD
     { wallet: "0x1a2b...3c4d", amount: "5,000 NAIRA", zcs: "5,882 ZCS", time: "2m ago" },
     { wallet: "0x5e6f...7g8h", amount: "2,500 NAIRA", zcs: "2,941 ZCS", time: "5m ago" },
     { wallet: "0x9i0j...1k2l", amount: "10,000 NAIRA", zcs: "11,765 ZCS", time: "8m ago" },
+=======
+    { wallet: "0x1a2b...3c4d", amount: "5,000 PUSD", zcs: "5,882 ZCS", time: "2m ago" },
+    { wallet: "0x5e6f...7g8h", amount: "2,500 PUSD", zcs: "2,941 ZCS", time: "5m ago" },
+    { wallet: "0x9i0j...1k2l", amount: "10,000 PUSD", zcs: "11,765 ZCS", time: "8m ago" },
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
   ]
 
   const userTransactions = [
     {
       type: "Purchase",
+<<<<<<< HEAD
       amount: "1,000 NAIRA",
+=======
+      amount: "1,000 PUSD",
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
       zcs: "1,176 ZCS",
       status: "Completed",
       hash: "0xabc123...",
       time: "2 hours ago",
     },
+<<<<<<< HEAD
     { type: "Purchase", amount: "500 NAIRA", zcs: "588 ZCS", status: "Pending", hash: "0xdef456...", time: "1 day ago" },
   ]
 
@@ -49,14 +64,28 @@ export default function ZhaneConsultingIDOPlatform() {
     setNairaAmount(value)
     const nairaValue = Number.parseFloat(value) || 0
     const zcsValue = nairaValue * 1.176 // Exchange rate
+=======
+    { type: "Purchase", amount: "500 PUSD", zcs: "588 ZCS", status: "Pending", hash: "0xdef456...", time: "1 day ago" },
+  ]
+
+  const handlePusdChange = (value: string) => {
+    setPusdAmount(value)
+    const pusdValue = Number.parseFloat(value) || 0
+    const zcsValue = pusdValue * 1.176 // Exchange rate
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
     setZcsAmount(zcsValue.toFixed(2))
   }
 
   const handleZcsChange = (value: string) => {
     setZcsAmount(value)
     const zcsValue = Number.parseFloat(value) || 0
+<<<<<<< HEAD
     const nairaValue = zcsValue / 1.176 // Reverse exchange rate
     setNairaAmount(nairaValue.toFixed(2))
+=======
+    const pusdValue = zcsValue / 1.176 // Reverse exchange rate
+    setPusdAmount(pusdValue.toFixed(2))
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
   }
 
   const handlePurchaseComplete = (txHash: string) => {
@@ -130,7 +159,11 @@ export default function ZhaneConsultingIDOPlatform() {
             <span className="text-slate-400">ZCS</span>
             <span className="text-white">$0.85</span>
             <span className="text-emerald-400">+2.1%</span>
+<<<<<<< HEAD
             <span className="text-slate-400">NAIRA</span>
+=======
+            <span className="text-slate-400">PUSD</span>
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
             <span className="text-white">$1.00</span>
           </div>
           {/* Added wallet connection status indicator */}
@@ -160,7 +193,11 @@ export default function ZhaneConsultingIDOPlatform() {
               <div className="relative z-10">
                 <h2 className="text-xl font-serif font-bold text-white mb-2">Empowering Your Investment Journey</h2>
                 <p className="text-slate-300 text-sm mb-4">
+<<<<<<< HEAD
                   Join the future of finance with Zhane Consulting Shares. Invest with confidence using NAIRA.
+=======
+                  Join the future of finance with Zhane Consulting Shares. Invest with confidence using PUSD.
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                 </p>
                 <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
                   Get Started with ZCS Today
@@ -317,12 +354,21 @@ export default function ZhaneConsultingIDOPlatform() {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
+<<<<<<< HEAD
                       <label className="text-slate-400 text-sm mb-2 block">You Pay (NAIRA)</label>
                       <Input
                         type="number"
                         placeholder="0.00"
                                   value={nairaAmount}
           onChange={(e) => handleNairaChange(e.target.value)}
+=======
+                      <label className="text-slate-400 text-sm mb-2 block">You Pay (PUSD)</label>
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        value={pusdAmount}
+                        onChange={(e) => handlePusdChange(e.target.value)}
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                         className="bg-slate-800 border-slate-700 text-white text-lg h-12"
                       />
                     </div>
@@ -340,7 +386,11 @@ export default function ZhaneConsultingIDOPlatform() {
 
                     <Button
                       onClick={() => setShowPurchaseModal(true)}
+<<<<<<< HEAD
                       disabled={!isConnected || !nairaAmount || Number.parseFloat(nairaAmount) <= 0}
+=======
+                      disabled={!isConnected || !pusdAmount || Number.parseFloat(pusdAmount) <= 0}
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                       className="w-full bg-emerald-600 hover:bg-emerald-700 h-12 text-lg font-medium"
                     >
                       {!isConnected ? "Connect Wallet First" : "Purchase ZCS Tokens"}
@@ -350,6 +400,7 @@ export default function ZhaneConsultingIDOPlatform() {
                   <div className="bg-slate-800/50 rounded-lg p-4 space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-400">Exchange Rate:</span>
+<<<<<<< HEAD
                       <span className="text-white">1 NAIRA = 1.176 ZCS</span>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -358,6 +409,16 @@ export default function ZhaneConsultingIDOPlatform() {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-400">Bonus (≥1000 NAIRA):</span>
+=======
+                      <span className="text-white">1 PUSD = 1.176 ZCS</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-400">Minimum Purchase:</span>
+                      <span className="text-white">100 PUSD</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-400">Bonus (≥1000 PUSD):</span>
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                       <span className="text-emerald-400">+10% ZCS</span>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -417,8 +478,12 @@ export default function ZhaneConsultingIDOPlatform() {
         <IDOPurchaseModal
           isOpen={showPurchaseModal}
           onClose={() => setShowPurchaseModal(false)}
+<<<<<<< HEAD
           nairaAmount={nairaAmount}
           zcsAmount={zcsAmount}
+=======
+          onComplete={handlePurchaseComplete}
+>>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
         />
       </div>
     </div>

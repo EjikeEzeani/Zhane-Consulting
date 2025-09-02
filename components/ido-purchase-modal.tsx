@@ -10,19 +10,12 @@ import { AlertCircle, CheckCircle, Clock, Shield, ArrowRight, X } from "lucide-r
 interface IDOPurchaseModalProps {
   isOpen: boolean
   onClose: () => void
-<<<<<<< HEAD
   nairaAmount: string
   zcsAmount: string
+  onComplete?: (txHash: string) => void
 }
 
-export function IDOPurchaseModal({ isOpen, onClose, nairaAmount, zcsAmount }: IDOPurchaseModalProps) {
-=======
-  pusdAmount: string
-  zcsAmount: string
-}
-
-export function IDOPurchaseModal({ isOpen, onClose, pusdAmount, zcsAmount }: IDOPurchaseModalProps) {
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
+export function IDOPurchaseModal({ isOpen, onClose, nairaAmount, zcsAmount, onComplete }: IDOPurchaseModalProps) {
   const [step, setStep] = useState(1)
   const [isProcessing, setIsProcessing] = useState(false)
   const [transactionHash, setTransactionHash] = useState("")
@@ -56,9 +49,6 @@ export function IDOPurchaseModal({ isOpen, onClose, pusdAmount, zcsAmount }: IDO
           </div>
 <<<<<<< HEAD
           <DialogDescription>Complete your ZCS token purchase with NAIRA</DialogDescription>
-=======
-          <DialogDescription>Complete your ZCS token purchase with PUSD</DialogDescription>
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
         </DialogHeader>
 
         <div className="space-y-6">
@@ -88,11 +78,7 @@ export function IDOPurchaseModal({ isOpen, onClose, pusdAmount, zcsAmount }: IDO
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-slate-400">You Pay:</span>
-<<<<<<< HEAD
                     <span className="font-bold">{nairaAmount} NAIRA</span>
-=======
-                    <span className="font-bold">{pusdAmount} PUSD</span>
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">You Receive:</span>
@@ -100,11 +86,7 @@ export function IDOPurchaseModal({ isOpen, onClose, pusdAmount, zcsAmount }: IDO
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Exchange Rate:</span>
-<<<<<<< HEAD
                     <span>1 NAIRA = 1.176 ZCS</span>
-=======
-                    <span>1 PUSD = 1.176 ZCS</span>
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Network Fee:</span>
@@ -158,10 +140,9 @@ export function IDOPurchaseModal({ isOpen, onClose, pusdAmount, zcsAmount }: IDO
                   <span className="font-medium">Secure Transaction</span>
                 </div>
                 <p className="text-sm text-slate-400 mb-4">
-<<<<<<< HEAD
                   Please confirm the transaction in your wallet. This will transfer {nairaAmount} NAIRA from your wallet
 =======
-                  Please confirm the transaction in your wallet. This will transfer {pusdAmount} PUSD from your wallet
+                  Please confirm the transaction in your wallet. This will transfer {NAIRAAmount} NAIRA from your wallet
 >>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                   to purchase {zcsAmount} ZCS tokens.
                 </p>

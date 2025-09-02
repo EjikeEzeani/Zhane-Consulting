@@ -18,11 +18,7 @@ interface Web3ContextType {
 
   // Contract instances
   zcsToken: ethers.Contract | null
-<<<<<<< HEAD
   nairaToken: ethers.Contract | null
-=======
-  pusdToken: ethers.Contract | null
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
   idoContract: ethers.Contract | null
   stakingContract: ethers.Contract | null
 
@@ -40,11 +36,7 @@ interface Web3ContextType {
   ) => Promise<ethers.ContractTransactionResponse>
 
   // IDO operations
-<<<<<<< HEAD
   buyTokens: (nairaAmount: string) => Promise<ethers.ContractTransactionResponse>
-=======
-  buyTokens: (pusdAmount: string) => Promise<ethers.ContractTransactionResponse>
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
   claimTokens: () => Promise<ethers.ContractTransactionResponse>
   getClaimableAmount: () => Promise<string>
 
@@ -81,11 +73,7 @@ export function Web3Provider({ children }: Web3ProviderProps) {
 
   // Contract instances
   const [zcsToken, setZcsToken] = useState<ethers.Contract | null>(null)
-<<<<<<< HEAD
   const [nairaToken, setNairaToken] = useState<ethers.Contract | null>(null)
-=======
-  const [pusdToken, setPusdToken] = useState<ethers.Contract | null>(null)
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
   const [idoContract, setIdoContract] = useState<ethers.Contract | null>(null)
   const [stakingContract, setStakingContract] = useState<ethers.Contract | null>(null)
 
@@ -96,20 +84,12 @@ export function Web3Provider({ children }: Web3ProviderProps) {
 
       try {
         const zcs = new ethers.Contract(config.contracts.ZCS_TOKEN, CONTRACT_ABIS.ERC20, signer)
-<<<<<<< HEAD
         const naira = new ethers.Contract(config.contracts.NAIRA_TOKEN, CONTRACT_ABIS.ERC20, signer)
-=======
-        const pusd = new ethers.Contract(config.contracts.PUSD_TOKEN, CONTRACT_ABIS.ERC20, signer)
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
         const ido = new ethers.Contract(config.contracts.IDO_CONTRACT, CONTRACT_ABIS.IDO_CONTRACT, signer)
         const staking = new ethers.Contract(config.contracts.STAKING_CONTRACT, CONTRACT_ABIS.STAKING_CONTRACT, signer)
 
         setZcsToken(zcs)
-<<<<<<< HEAD
         setNairaToken(naira)
-=======
-        setPusdToken(pusd)
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
         setIdoContract(ido)
         setStakingContract(staking)
       } catch (error) {
@@ -209,11 +189,7 @@ export function Web3Provider({ children }: Web3ProviderProps) {
     setBalance("0")
     setIsConnected(false)
     setZcsToken(null)
-<<<<<<< HEAD
-            setNairaToken(null)
-=======
-    setPusdToken(null)
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
+    setNairaToken(null)
     setIdoContract(null)
     setStakingContract(null)
   }
@@ -291,19 +267,11 @@ export function Web3Provider({ children }: Web3ProviderProps) {
     return await tokenContract.approve(spenderAddress, amountWei)
   }
 
-<<<<<<< HEAD
   const buyTokens = async (nairaAmount: string): Promise<ethers.ContractTransactionResponse> => {
     if (!idoContract || !nairaToken) throw new Error("Contracts not initialized")
 
     const decimals = await nairaToken.decimals()
     const amountWei = ethers.parseUnits(nairaAmount, decimals)
-=======
-  const buyTokens = async (pusdAmount: string): Promise<ethers.ContractTransactionResponse> => {
-    if (!idoContract || !pusdToken) throw new Error("Contracts not initialized")
-
-    const decimals = await pusdToken.decimals()
-    const amountWei = ethers.parseUnits(pusdAmount, decimals)
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
 
     return await idoContract.buyTokens(amountWei)
   }
@@ -367,11 +335,7 @@ export function Web3Provider({ children }: Web3ProviderProps) {
 
     // Contract instances
     zcsToken,
-<<<<<<< HEAD
     nairaToken,
-=======
-    pusdToken,
->>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
     idoContract,
     stakingContract,
 

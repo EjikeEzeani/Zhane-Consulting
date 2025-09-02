@@ -27,7 +27,7 @@ export default function AnalyticsPage() {
 <<<<<<< HEAD
               description: "Total NAIRA invested in IDO",
 =======
-      description: "Total PUSD invested in IDO",
+      description: "Total NAIRA invested in IDO",
 >>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
     },
     {

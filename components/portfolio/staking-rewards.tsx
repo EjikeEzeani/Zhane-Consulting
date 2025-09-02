@@ -23,9 +23,9 @@ export function StakingRewards() {
       apy: "45.2%",
               staked: "2,500 ZCS + 2,125 NAIRA",
 =======
-      name: "ZCS-PUSD LP Pool",
+      name: "ZCS-NAIRA LP Pool",
       apy: "45.2%",
-      staked: "2,500 ZCS + 2,125 PUSD",
+      staked: "2,500 ZCS + 2,125 NAIRA",
 >>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
       value: "$4,250.00",
       rewards: "89.7 ZCS",
@@ -41,7 +41,7 @@ export function StakingRewards() {
 <<<<<<< HEAD
             { date: "Jan 10", amount: "15.4 ZCS", value: "$13.09", pool: "ZCS-NAIRA LP" },
 =======
-    { date: "Jan 10", amount: "15.4 ZCS", value: "$13.09", pool: "ZCS-PUSD LP" },
+    { date: "Jan 10", amount: "15.4 ZCS", value: "$13.09", pool: "ZCS-NAIRA LP" },
 >>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
     { date: "Jan 9", amount: "12.1 ZCS", value: "$10.29", pool: "ZCS Staking" },
   ]

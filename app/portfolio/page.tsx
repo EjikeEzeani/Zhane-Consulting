@@ -304,7 +304,7 @@ export default function PortfolioPage() {
 <<<<<<< HEAD
                       <span className="text-sm text-slate-400">NAIRA Balance</span>
 =======
-                      <span className="text-sm text-slate-400">PUSD Balance</span>
+                      <span className="text-sm text-slate-400">NAIRA Balance</span>
 >>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                       <span className="text-sm font-medium">6.3%</span>
                     </div>

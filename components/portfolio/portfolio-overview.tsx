@@ -19,13 +19,13 @@ export function PortfolioOverview({ timeRange }: PortfolioOverviewProps) {
     { date: "Jan 5", value: 12200, zcs: 14400, naira: 0 },
     { date: "Jan 12", value: 12847, zcs: 15120, naira: 0 },
 =======
-    { date: "Dec 1", value: 8500, zcs: 10000, pusd: 500 },
-    { date: "Dec 8", value: 9200, zcs: 10800, pusd: 400 },
-    { date: "Dec 15", value: 10100, zcs: 11900, pusd: 200 },
-    { date: "Dec 22", value: 11300, zcs: 13300, pusd: 0 },
-    { date: "Dec 29", value: 11800, zcs: 13900, pusd: 0 },
-    { date: "Jan 5", value: 12200, zcs: 14400, pusd: 0 },
-    { date: "Jan 12", value: 12847, zcs: 15120, pusd: 0 },
+    { date: "Dec 1", value: 8500, zcs: 10000, NAIRA: 500 },
+    { date: "Dec 8", value: 9200, zcs: 10800, NAIRA: 400 },
+    { date: "Dec 15", value: 10100, zcs: 11900, NAIRA: 200 },
+    { date: "Dec 22", value: 11300, zcs: 13300, NAIRA: 0 },
+    { date: "Dec 29", value: 11800, zcs: 13900, NAIRA: 0 },
+    { date: "Jan 5", value: 12200, zcs: 14400, NAIRA: 0 },
+    { date: "Jan 12", value: 12847, zcs: 15120, NAIRA: 0 },
 >>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
   ]
 
@@ -124,7 +124,7 @@ export function PortfolioOverview({ timeRange }: PortfolioOverviewProps) {
 <<<<<<< HEAD
                 <div className="font-medium">NAIRA Balance</div>
 =======
-                <div className="font-medium">PUSD Balance</div>
+                <div className="font-medium">NAIRA Balance</div>
 >>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
                 <div className="text-sm text-slate-400">Available for investment</div>
               </div>
@@ -133,7 +133,7 @@ export function PortfolioOverview({ timeRange }: PortfolioOverviewProps) {
 <<<<<<< HEAD
               <div className="font-bold">0.00 NAIRA</div>
 =======
-              <div className="font-bold">0.00 PUSD</div>
+              <div className="font-bold">0.00 NAIRA</div>
 >>>>>>> 59d80e45fe4a67683c07bfbd9453374c12f99eaa
               <div className="text-sm text-slate-400">$0.00</div>
               <div className="text-xs text-slate-400">0%</div>

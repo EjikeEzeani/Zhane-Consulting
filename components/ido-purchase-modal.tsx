@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { AlertCircle, CheckCircle, Clock, Shield, ArrowRight, X } from "lucide-react"
+import { useWeb3 } from "@/contexts/web3-context"
+import { toast } from "sonner"
 
 interface IDOPurchaseModalProps {
   isOpen: boolean
@@ -19,15 +21,117 @@ export function IDOPurchaseModal({ isOpen, onClose, nairaAmount, zcsAmount, onCo
   const [step, setStep] = useState(1)
   const [isProcessing, setIsProcessing] = useState(false)
   const [transactionHash, setTransactionHash] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  
+  const { isConnected, buyTokens, idoContract, nairaToken, approveToken, getTokenAllowance } = useWeb3()
 
   const handlePurchase = async () => {
+    if (!isConnected) {
+      setError("Wallet not connected")
+      toast.error("Please connect your wallet first")
+      return
+    }
+
+    if (!idoContract) {
+      setError("IDO contract not available")
+      toast.error("IDO contract not available. Please check your network connection.")
+      return
+    }
+
     setIsProcessing(true)
-    // Simulate transaction processing
-    setTimeout(() => {
-      setTransactionHash("0x1234567890abcdef1234567890abcdef12345678")
-      setStep(3)
+    setError(null)
+
+    try {
+      // Get the current network configuration to find the NAIRA token address
+      const nairaAmountWei = BigInt(Math.floor(Number.parseFloat(nairaAmount) * 1e18))
+      
+      // First, check if we need to approve NAIRA tokens (only if NAIRA token is available)
+      let needsApproval = false
+      if (nairaToken) {
+        try {
+          const currentAllowance = await getTokenAllowance(
+            nairaToken.target as string, 
+            idoContract.target as string
+          )
+          
+          const allowanceWei = BigInt(Math.floor(Number.parseFloat(currentAllowance) * 1e18))
+          needsApproval = allowanceWei < nairaAmountWei
+        } catch (allowanceError) {
+          console.warn("Could not check allowance, skipping approval check:", allowanceError)
+          // If we can't check allowance, we'll skip approval and try direct purchase
+          needsApproval = false
+        }
+        
+        if (needsApproval) {
+          toast.info("Approving NAIRA tokens...")
+          try {
+            const approveTx = await approveToken(
+              nairaToken.target as string,
+              idoContract.target as string,
+              nairaAmount
+            )
+            
+            toast.info("Waiting for approval confirmation...")
+            await approveTx.wait()
+            toast.success("NAIRA tokens approved successfully!")
+          } catch (approvalError) {
+            console.warn("Approval failed, trying direct purchase:", approvalError)
+            // If approval fails, we'll try the purchase anyway in case it's not needed
+          }
+        }
+      } else {
+        console.warn("NAIRA token contract not available, proceeding with direct purchase")
+        toast.info("Proceeding with direct purchase...")
+      }
+
+      // Now execute the purchase
+      toast.info("Executing purchase transaction...")
+      const purchaseTx = await buyTokens(nairaAmount)
+      
+      setTransactionHash(purchaseTx.hash)
+      toast.info("Transaction submitted! Waiting for confirmation...")
+      
+      // Wait for transaction confirmation
+      const receipt = await purchaseTx.wait()
+      
+      if (receipt && receipt.status === 1) {
+        toast.success("Purchase completed successfully!")
+        setStep(3)
+        if (onComplete) {
+          onComplete(purchaseTx.hash)
+        }
+      } else if (receipt && receipt.status === 0) {
+        throw new Error("Transaction failed")
+      } else {
+        throw new Error("Transaction confirmation failed")
+      }
+      
+    } catch (error: any) {
+      console.error("Purchase error:", error)
+      
+      let errorMessage = "Transaction failed"
+      if (error.message.includes("user rejected")) {
+        errorMessage = "Transaction was rejected by user"
+      } else if (error.message.includes("insufficient funds")) {
+        errorMessage = "Insufficient NAIRA balance"
+      } else if (error.message.includes("gas")) {
+        errorMessage = "Transaction failed due to gas issues"
+      } else if (error.code === 'BAD_DATA' || error.message.includes("could not decode result data")) {
+        errorMessage = "Contract not found or invalid. Please check the network and contract addresses."
+      } else if (error.message.includes("Token contract not found")) {
+        errorMessage = "Token contract not found. Please check your network connection."
+      } else if (error.message.includes("network")) {
+        errorMessage = "Network error. Please check your connection and try again."
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
+      setError(errorMessage)
+      toast.error(errorMessage)
+      setStep(1) // Go back to step 1 to allow retry
+    } finally {
       setIsProcessing(false)
-    }, 3000)
+    }
   }
 
   const vestingSchedule = [
@@ -37,13 +141,21 @@ export function IDOPurchaseModal({ isOpen, onClose, nairaAmount, zcsAmount, onCo
     { period: "Month 3", percentage: 25, date: "Apr 15, 2025" },
   ]
 
+  const handleClose = () => {
+    setStep(1)
+    setError(null)
+    setTransactionHash("")
+    setIsProcessing(false)
+    onClose()
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl bg-slate-900 border-slate-800">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-serif">Purchase ZCS Tokens</DialogTitle>
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button variant="ghost" size="icon" onClick={handleClose}>
               <X className="w-4 h-4" />
             </Button>
           </div>
@@ -152,15 +264,37 @@ export function IDOPurchaseModal({ isOpen, onClose, nairaAmount, zcsAmount, onCo
                     <Progress value={66} className="h-2" />
                   </div>
                 )}
+
+                {error && (
+                  <div className="mt-4 p-3 bg-red-900/20 border border-red-800 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-red-400 mt-0.5" />
+                      <div className="text-sm">
+                        <p className="text-red-400 font-medium">Transaction Failed</p>
+                        <p className="text-slate-300">{error}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <Button
-                onClick={handlePurchase}
-                disabled={isProcessing}
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
-              >
-                {isProcessing ? "Processing..." : "Confirm Purchase"}
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setStep(1)}
+                  disabled={isProcessing}
+                  className="flex-1 border-slate-700"
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={handlePurchase}
+                  disabled={isProcessing || !isConnected}
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                >
+                  {isProcessing ? "Processing..." : "Confirm Purchase"}
+                </Button>
+              </div>
             </div>
           )}
 
@@ -193,7 +327,7 @@ export function IDOPurchaseModal({ isOpen, onClose, nairaAmount, zcsAmount, onCo
                 </div>
               </Card>
 
-              <Button onClick={onClose} className="w-full bg-emerald-600 hover:bg-emerald-700">
+              <Button onClick={handleClose} className="w-full bg-emerald-600 hover:bg-emerald-700">
                 Close
               </Button>
             </div>

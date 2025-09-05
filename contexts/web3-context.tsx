@@ -1,62 +1,43 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import React, { createContext, useContext, useEffect, useState, ReactNode } from "react"
 import { ethers } from "ethers"
 import { WEB3_CONFIG, DEFAULT_CHAIN, CONTRACT_ABIS } from "@/lib/web3-config"
+import { toast } from "sonner"
+
+// Extend Window interface to include ethereum
+declare global {
+  interface Window {
+    ethereum?: {
+      request: (args: { method: string; params?: any[] }) => Promise<any>
+      on: (event: string, callback: (...args: any[]) => void) => void
+      removeListener: (event: string, callback: (...args: any[]) => void) => void
+      selectedAddress?: string
+      chainId?: string
+    }
+  }
+}
 
 interface Web3ContextType {
-  // Connection state
   isConnected: boolean
-  isConnecting: boolean
   account: string | null
   chainId: number | null
-  balance: string
-
-  // Provider and signer
-  provider: ethers.BrowserProvider | null
-  signer: ethers.JsonRpcSigner | null
-
-  // Contract instances
+  provider: ethers.Provider | null
+  signer: ethers.Signer | null
   zcsToken: ethers.Contract | null
   nairaToken: ethers.Contract | null
   idoContract: ethers.Contract | null
   stakingContract: ethers.Contract | null
-
-  // Actions
   connectWallet: () => Promise<void>
   disconnectWallet: () => void
   switchNetwork: (chainId: number) => Promise<void>
-
-  // Token operations
-  getTokenBalance: (tokenAddress: string) => Promise<string>
-  approveToken: (
-    tokenAddress: string,
-    spenderAddress: string,
-    amount: string,
-  ) => Promise<ethers.ContractTransactionResponse>
-
-  // IDO operations
   buyTokens: (nairaAmount: string) => Promise<ethers.ContractTransactionResponse>
-  claimTokens: () => Promise<ethers.ContractTransactionResponse>
-  getClaimableAmount: () => Promise<string>
-
-  // Staking operations
-  stakeTokens: (amount: string) => Promise<ethers.ContractTransactionResponse>
-  unstakeTokens: (amount: string) => Promise<ethers.ContractTransactionResponse>
-  claimStakingRewards: () => Promise<ethers.ContractTransactionResponse>
-  getStakedAmount: () => Promise<string>
-  getPendingRewards: () => Promise<string>
+  approveToken: (tokenAddress: string, spenderAddress: string, amount: string) => Promise<ethers.ContractTransactionResponse>
+  getTokenBalance: (tokenAddress: string) => Promise<string>
+  getTokenAllowance: (tokenAddress: string, spenderAddress: string) => Promise<string>
 }
 
-const Web3Context = createContext<Web3ContextType | undefined>(undefined)
-
-export function useWeb3() {
-  const context = useContext(Web3Context)
-  if (context === undefined) {
-    throw new Error("useWeb3 must be used within a Web3Provider")
-  }
-  return context
-}
+const Web3Context = createContext<Web3ContextType | null>(null)
 
 interface Web3ProviderProps {
   children: ReactNode
@@ -64,24 +45,261 @@ interface Web3ProviderProps {
 
 export function Web3Provider({ children }: Web3ProviderProps) {
   const [isConnected, setIsConnected] = useState(false)
-  const [isConnecting, setIsConnecting] = useState(false)
   const [account, setAccount] = useState<string | null>(null)
   const [chainId, setChainId] = useState<number | null>(null)
-  const [balance, setBalance] = useState("0")
-  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null)
-  const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null)
-
-  // Contract instances
+  const [provider, setProvider] = useState<ethers.Provider | null>(null)
+  const [signer, setSigner] = useState<ethers.Signer | null>(null)
   const [zcsToken, setZcsToken] = useState<ethers.Contract | null>(null)
   const [nairaToken, setNairaToken] = useState<ethers.Contract | null>(null)
-  const [idoContract, setIdoContract] = useState<ethers.Contract | null>(null)
+  const [idoContract, setIDOContract] = useState<ethers.Contract | null>(null)
   const [stakingContract, setStakingContract] = useState<ethers.Contract | null>(null)
 
-  // Initialize contracts when signer changes
+  const handleAccountsChanged = (accounts: string[]) => {
+    if (accounts.length === 0) {
+      setIsConnected(false)
+      setAccount(null)
+      setProvider(null)
+      setSigner(null)
+      setZcsToken(null)
+      setNairaToken(null)
+      setIDOContract(null)
+      setStakingContract(null)
+    } else {
+      setAccount(accounts[0])
+    }
+  }
+
+  const handleChainChanged = (newChainId: string) => {
+    setChainId(parseInt(newChainId, 16))
+    window.location.reload()
+  }
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.ethereum) {
+      window.ethereum.on("accountsChanged", handleAccountsChanged)
+      window.ethereum.on("chainChanged", handleChainChanged)
+
+      // Check if already connected
+      const checkConnection = async () => {
+        try {
+          if (window.ethereum) {
+            const accounts = await window.ethereum.request({ method: "eth_accounts" })
+            if (accounts.length > 0) {
+              const browserProvider = new ethers.BrowserProvider(window.ethereum)
+              const signer = await browserProvider.getSigner()
+              const network = await browserProvider.getNetwork()
+
+              setProvider(browserProvider)
+              setSigner(signer)
+              setAccount(accounts[0])
+              setChainId(Number(network.chainId))
+              setIsConnected(true)
+            }
+          }
+        } catch (error) {
+          console.log("No existing connection found")
+        }
+      }
+
+      checkConnection()
+
+      return () => {
+        if (window.ethereum) {
+          window.ethereum.removeListener("accountsChanged", handleAccountsChanged)
+          window.ethereum.removeListener("chainChanged", handleChainChanged)
+        }
+      }
+    }
+  }, [])
+
+  const connectWallet = async () => {
+    try {
+      if (typeof window === "undefined" || !window.ethereum) {
+        throw new Error("MetaMask is not installed")
+      }
+
+      // Request account access - this will prompt the user to connect
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" })
+      
+      if (accounts.length > 0) {
+        const browserProvider = new ethers.BrowserProvider(window.ethereum)
+        const signer = await browserProvider.getSigner()
+        const network = await browserProvider.getNetwork()
+        const currentChainId = Number(network.chainId)
+
+        // Check if current network is supported
+        const isSupported = Object.values(WEB3_CONFIG).some(config => config.chainId === currentChainId)
+        
+        if (!isSupported) {
+          // Auto-switch to default network
+          try {
+            await switchNetwork(DEFAULT_CHAIN.chainId)
+            // After switching, get the new network info
+            const newNetwork = await browserProvider.getNetwork()
+            setChainId(Number(newNetwork.chainId))
+          } catch (switchError) {
+            console.warn("Failed to auto-switch network:", switchError)
+            // Still allow connection but warn user
+            toast?.warning("Connected to unsupported network. Please switch manually.")
+          }
+        } else {
+          setChainId(currentChainId)
+        }
+
+        setProvider(browserProvider)
+        setSigner(signer)
+        setAccount(accounts[0])
+        setIsConnected(true)
+      } else {
+        throw new Error("No accounts found")
+      }
+    } catch (error) {
+      console.error("Error connecting wallet:", error)
+      throw error
+    }
+  }
+
+  const disconnectWallet = () => {
+    setIsConnected(false)
+    setAccount(null)
+    setProvider(null)
+    setSigner(null)
+    setChainId(null)
+    setZcsToken(null)
+    setNairaToken(null)
+    setIDOContract(null)
+    setStakingContract(null)
+  }
+
+  const switchNetwork = async (targetChainId: number) => {
+    try {
+      if (typeof window === "undefined" || !window.ethereum) {
+        throw new Error("MetaMask is not installed")
+      }
+
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" })
+      const browserProvider = new ethers.BrowserProvider(window.ethereum)
+
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: `0x${targetChainId.toString(16)}` }],
+        })
+      } catch (switchError: any) {
+        if (switchError.code === 4902) {
+          const chainConfig = Object.values(WEB3_CONFIG).find((c) => c.chainId === targetChainId)
+          if (chainConfig) {
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: `0x${targetChainId.toString(16)}`,
+                  chainName: chainConfig.name,
+                  nativeCurrency: {
+                    name: "Ether",
+                    symbol: "ETH",
+                    decimals: 18,
+                  },
+                  rpcUrls: [chainConfig.rpcUrl],
+                  blockExplorerUrls: [chainConfig.blockExplorer],
+                },
+              ],
+            })
+          }
+        } else {
+          throw switchError
+        }
+      }
+
+      const signer = await browserProvider.getSigner()
+      const network = await browserProvider.getNetwork()
+
+      setProvider(browserProvider)
+      setSigner(signer)
+      setChainId(Number(network.chainId))
+    } catch (error) {
+      console.error("Error switching network:", error)
+      throw error
+    }
+  }
+
+  const buyTokens = async (nairaAmount: string): Promise<ethers.ContractTransactionResponse> => {
+    if (!idoContract || !signer) {
+      throw new Error("Contract or signer not available")
+    }
+
+    try {
+      const amount = ethers.parseUnits(nairaAmount, 18)
+      // Based on the ABI, the function is called 'buy' and takes amountB parameter
+      const tx = await idoContract.buy(amount)
+      return tx
+    } catch (error) {
+      console.error("Error buying tokens:", error)
+      throw error
+    }
+  }
+
+  const approveToken = async (
+    tokenAddress: string,
+    spenderAddress: string,
+    amount: string
+  ): Promise<ethers.ContractTransactionResponse> => {
+    if (!signer) {
+      throw new Error("Signer not available")
+    }
+
+    try {
+      const token = new ethers.Contract(tokenAddress, CONTRACT_ABIS.ERC20, signer)
+      const amountWei = ethers.parseUnits(amount, 18)
+      const tx = await token.approve(spenderAddress, amountWei)
+      return tx
+    } catch (error) {
+      console.error("Error approving token:", error)
+      throw error
+    }
+  }
+
+  const getTokenBalance = async (tokenAddress: string): Promise<string> => {
+    if (!signer || !account) {
+      throw new Error("Signer or account not available")
+    }
+
+    try {
+      const token = new ethers.Contract(tokenAddress, CONTRACT_ABIS.ERC20, signer)
+      const balance = await token.balanceOf(account)
+      return ethers.formatUnits(balance, 18)
+    } catch (error) {
+      console.error("Error getting token balance:", error)
+      throw error
+    }
+  }
+
+  const getTokenAllowance = async (tokenAddress: string, spenderAddress: string): Promise<string> => {
+    if (!signer || !account) {
+      throw new Error("Signer or account not available")
+    }
+
+    try {
+      const token = new ethers.Contract(tokenAddress, CONTRACT_ABIS.ERC20, signer)
+      const allowance = await token.allowance(account, spenderAddress)
+      return ethers.formatUnits(allowance, 18)
+    } catch (error: any) {
+      console.error("Error getting token allowance:", error)
+      
+      // Provide more specific error messages
+      if (error.code === 'BAD_DATA' || error.message.includes('could not decode result data')) {
+        throw new Error("Token contract not found or invalid. Please check the network and contract addresses.")
+      } else if (error.message.includes('network')) {
+        throw new Error("Network error. Please check your connection and try again.")
+      } else {
+        throw new Error(`Failed to check token allowance: ${error.message}`)
+      }
+    }
+  }
+
   useEffect(() => {
     if (signer && chainId) {
       const config = Object.values(WEB3_CONFIG).find((c) => c.chainId === chainId) || DEFAULT_CHAIN
-
       try {
         const zcs = new ethers.Contract(config.contracts.ZCS_TOKEN, CONTRACT_ABIS.ERC20, signer)
         const naira = new ethers.Contract(config.contracts.NAIRA_TOKEN, CONTRACT_ABIS.ERC20, signer)
@@ -90,7 +308,7 @@ export function Web3Provider({ children }: Web3ProviderProps) {
 
         setZcsToken(zcs)
         setNairaToken(naira)
-        setIdoContract(ido)
+        setIDOContract(ido)
         setStakingContract(staking)
       } catch (error) {
         console.error("Error initializing contracts:", error)
@@ -98,268 +316,32 @@ export function Web3Provider({ children }: Web3ProviderProps) {
     }
   }, [signer, chainId])
 
-  // Check if wallet is already connected on load
-  useEffect(() => {
-    checkConnection()
-  }, [])
-
-  // Listen for account changes
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.ethereum) {
-      const handleAccountsChanged = (accounts: string[]) => {
-        if (accounts.length === 0) {
-          disconnectWallet()
-        } else {
-          setAccount(accounts[0])
-        }
-      }
-
-      const handleChainChanged = (chainId: string) => {
-        setChainId(Number.parseInt(chainId, 16))
-      }
-
-      window.ethereum.on("accountsChanged", handleAccountsChanged)
-      window.ethereum.on("chainChanged", handleChainChanged)
-
-      return () => {
-        window.ethereum.removeListener("accountsChanged", handleAccountsChanged)
-        window.ethereum.removeListener("chainChanged", handleChainChanged)
-      }
-    }
-  }, [])
-
-  // Update balance when account or chainId changes
-  useEffect(() => {
-    if (account && provider) {
-      updateBalance()
-    }
-  }, [account, provider, chainId])
-
-  const checkConnection = async () => {
-    if (typeof window !== "undefined" && window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ method: "eth_accounts" })
-        if (accounts.length > 0) {
-          const browserProvider = new ethers.BrowserProvider(window.ethereum)
-          const network = await browserProvider.getNetwork()
-          const signer = await browserProvider.getSigner()
-
-          setProvider(browserProvider)
-          setSigner(signer)
-          setAccount(accounts[0])
-          setChainId(Number(network.chainId))
-          setIsConnected(true)
-        }
-      } catch (error) {
-        console.error("Error checking connection:", error)
-      }
-    }
-  }
-
-  const connectWallet = async () => {
-    if (typeof window === "undefined" || !window.ethereum) {
-      throw new Error("MetaMask is not installed")
-    }
-
-    setIsConnecting(true)
-    try {
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" })
-      const browserProvider = new ethers.BrowserProvider(window.ethereum)
-      const network = await browserProvider.getNetwork()
-      const signer = await browserProvider.getSigner()
-
-      setProvider(browserProvider)
-      setSigner(signer)
-      setAccount(accounts[0])
-      setChainId(Number(network.chainId))
-      setIsConnected(true)
-    } catch (error) {
-      console.error("Error connecting wallet:", error)
-      throw error
-    } finally {
-      setIsConnecting(false)
-    }
-  }
-
-  const disconnectWallet = () => {
-    setProvider(null)
-    setSigner(null)
-    setAccount(null)
-    setChainId(null)
-    setBalance("0")
-    setIsConnected(false)
-    setZcsToken(null)
-    setNairaToken(null)
-    setIdoContract(null)
-    setStakingContract(null)
-  }
-
-  const switchNetwork = async (targetChainId: number) => {
-    if (typeof window === "undefined" || !window.ethereum) {
-      throw new Error("MetaMask is not installed")
-    }
-
-    const config = Object.values(WEB3_CONFIG).find((c) => c.chainId === targetChainId)
-    if (!config) {
-      throw new Error("Unsupported network")
-    }
-
-    try {
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: `0x${targetChainId.toString(16)}` }],
-      })
-    } catch (switchError: any) {
-      // This error code indicates that the chain has not been added to MetaMask
-      if (switchError.code === 4902) {
-        try {
-          await window.ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: `0x${targetChainId.toString(16)}`,
-                chainName: config.name,
-                rpcUrls: [config.rpcUrl],
-                blockExplorerUrls: [config.blockExplorer],
-              },
-            ],
-          })
-        } catch (addError) {
-          throw addError
-        }
-      } else {
-        throw switchError
-      }
-    }
-  }
-
-  const updateBalance = async () => {
-    if (account && provider) {
-      try {
-        const balance = await provider.getBalance(account)
-        setBalance(ethers.formatEther(balance))
-      } catch (error) {
-        console.error("Error updating balance:", error)
-      }
-    }
-  }
-
-  const getTokenBalance = async (tokenAddress: string): Promise<string> => {
-    if (!signer || !account) throw new Error("Wallet not connected")
-
-    const tokenContract = new ethers.Contract(tokenAddress, CONTRACT_ABIS.ERC20, signer)
-    const balance = await tokenContract.balanceOf(account)
-    const decimals = await tokenContract.decimals()
-    return ethers.formatUnits(balance, decimals)
-  }
-
-  const approveToken = async (
-    tokenAddress: string,
-    spenderAddress: string,
-    amount: string,
-  ): Promise<ethers.ContractTransactionResponse> => {
-    if (!signer) throw new Error("Wallet not connected")
-
-    const tokenContract = new ethers.Contract(tokenAddress, CONTRACT_ABIS.ERC20, signer)
-    const decimals = await tokenContract.decimals()
-    const amountWei = ethers.parseUnits(amount, decimals)
-
-    return await tokenContract.approve(spenderAddress, amountWei)
-  }
-
-  const buyTokens = async (nairaAmount: string): Promise<ethers.ContractTransactionResponse> => {
-    if (!idoContract || !nairaToken) throw new Error("Contracts not initialized")
-
-    const decimals = await nairaToken.decimals()
-    const amountWei = ethers.parseUnits(nairaAmount, decimals)
-
-    return await idoContract.buyTokens(amountWei)
-  }
-
-  const claimTokens = async (): Promise<ethers.ContractTransactionResponse> => {
-    if (!idoContract) throw new Error("IDO contract not initialized")
-    return await idoContract.claimTokens()
-  }
-
-  const getClaimableAmount = async (): Promise<string> => {
-    if (!idoContract || !account) throw new Error("Contract not initialized or wallet not connected")
-
-    const amount = await idoContract.getClaimableAmount(account)
-    return ethers.formatUnits(amount, 18) // Assuming 18 decimals for ZCS
-  }
-
-  const stakeTokens = async (amount: string): Promise<ethers.ContractTransactionResponse> => {
-    if (!stakingContract) throw new Error("Staking contract not initialized")
-
-    const amountWei = ethers.parseUnits(amount, 18)
-    return await stakingContract.stake(amountWei)
-  }
-
-  const unstakeTokens = async (amount: string): Promise<ethers.ContractTransactionResponse> => {
-    if (!stakingContract) throw new Error("Staking contract not initialized")
-
-    const amountWei = ethers.parseUnits(amount, 18)
-    return await stakingContract.unstake(amountWei)
-  }
-
-  const claimStakingRewards = async (): Promise<ethers.ContractTransactionResponse> => {
-    if (!stakingContract) throw new Error("Staking contract not initialized")
-    return await stakingContract.claimRewards()
-  }
-
-  const getStakedAmount = async (): Promise<string> => {
-    if (!stakingContract || !account) throw new Error("Contract not initialized or wallet not connected")
-
-    const amount = await stakingContract.getStakedAmount(account)
-    return ethers.formatUnits(amount, 18)
-  }
-
-  const getPendingRewards = async (): Promise<string> => {
-    if (!stakingContract || !account) throw new Error("Contract not initialized or wallet not connected")
-
-    const amount = await stakingContract.getPendingRewards(account)
-    return ethers.formatUnits(amount, 18)
-  }
-
   const value: Web3ContextType = {
-    // Connection state
     isConnected,
-    isConnecting,
     account,
     chainId,
-    balance,
-
-    // Provider and signer
     provider,
     signer,
-
-    // Contract instances
     zcsToken,
     nairaToken,
     idoContract,
     stakingContract,
-
-    // Actions
     connectWallet,
     disconnectWallet,
     switchNetwork,
-
-    // Token operations
-    getTokenBalance,
-    approveToken,
-
-    // IDO operations
     buyTokens,
-    claimTokens,
-    getClaimableAmount,
-
-    // Staking operations
-    stakeTokens,
-    unstakeTokens,
-    claimStakingRewards,
-    getStakedAmount,
-    getPendingRewards,
+    approveToken,
+    getTokenBalance,
+    getTokenAllowance,
   }
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>
+}
+
+export function useWeb3() {
+  const context = useContext(Web3Context)
+  if (!context) {
+    throw new Error("useWeb3 must be used within a Web3Provider")
+  }
+  return context
 }

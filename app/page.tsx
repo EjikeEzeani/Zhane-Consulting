@@ -162,8 +162,12 @@ export default function ZhaneConsultingIDOPlatform() {
                                  <p className="text-slate-300 text-sm mb-4">
                    Join the future of finance with Zhane Consulting Shares. Invest with confidence using NAIRA.
                  </p>
-                <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
-                  Get Started with ZCS Today
+                <Button 
+                  onClick={() => setShowPurchaseModal(true)}
+                  disabled={!isConnected}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {!isConnected ? "Connect Wallet to Start" : "Get Started with ZCS Today"}
                 </Button>
               </div>
             </div>
@@ -173,22 +177,34 @@ export default function ZhaneConsultingIDOPlatform() {
             <div>
               <h3 className="text-slate-400 text-sm font-medium mb-4">Platform Features</h3>
               <div className="space-y-3">
-                <div className="flex items-center space-x-3 text-slate-300 hover:text-white cursor-pointer">
+                <a 
+                  href="/analytics" 
+                  className="flex items-center space-x-3 text-slate-300 hover:text-white cursor-pointer transition-colors duration-200"
+                >
                   <BarChart3 className="w-5 h-5 text-emerald-400" />
                   <span>Real-Time Analytics</span>
-                </div>
-                <div className="flex items-center space-x-3 text-slate-300 hover:text-white cursor-pointer">
+                </a>
+                <button 
+                  onClick={() => setShowTxStatus(true)}
+                  className="flex items-center space-x-3 text-slate-300 hover:text-white cursor-pointer transition-colors duration-200 w-full text-left"
+                >
                   <Shield className="w-5 h-5 text-emerald-400" />
                   <span>Secure Transactions</span>
-                </div>
-                <div className="flex items-center space-x-3 text-slate-300 hover:text-white cursor-pointer">
+                </button>
+                <a 
+                  href="/portfolio" 
+                  className="flex items-center space-x-3 text-slate-300 hover:text-white cursor-pointer transition-colors duration-200"
+                >
                   <Users className="w-5 h-5 text-emerald-400" />
                   <span>Community Governance</span>
-                </div>
-                <div className="flex items-center space-x-3 text-slate-300 hover:text-white cursor-pointer">
+                </a>
+                <a 
+                  href="/portfolio" 
+                  className="flex items-center space-x-3 text-slate-300 hover:text-white cursor-pointer transition-colors duration-200"
+                >
                   <Wallet className="w-5 h-5 text-emerald-400" />
                   <span>Portfolio Management</span>
-                </div>
+                </a>
               </div>
             </div>
 
@@ -394,7 +410,13 @@ export default function ZhaneConsultingIDOPlatform() {
                       <span className="text-slate-300 text-sm">Long-term value preservation</span>
                     </div>
                   </div>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">Start Your Family's Legacy</Button>
+                  <Button 
+                    onClick={() => setShowPurchaseModal(true)}
+                    disabled={!isConnected}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    {!isConnected ? "Connect Wallet to Start Legacy" : "Start Your Family's Legacy"}
+                  </Button>
                 </div>
                 <div className="relative">
                   <div className="rounded-lg overflow-hidden border-2 border-emerald-600/30 shadow-2xl">
@@ -414,13 +436,60 @@ export default function ZhaneConsultingIDOPlatform() {
         </main>
 
         {/* Purchase Modal */}
-                 <IDOPurchaseModal
-           isOpen={showPurchaseModal}
-           onClose={() => setShowPurchaseModal(false)}
-           nairaAmount={nairaAmount}
-           zcsAmount={zcsAmount}
-           onComplete={handlePurchaseComplete}
-         />
+        <IDOPurchaseModal
+          isOpen={showPurchaseModal}
+          onClose={() => setShowPurchaseModal(false)}
+          nairaAmount={nairaAmount}
+          zcsAmount={zcsAmount}
+          onComplete={handlePurchaseComplete}
+        />
+
+        {/* Transaction Status Modal */}
+        {showTxStatus && (
+          <div 
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            onClick={() => setShowTxStatus(false)}
+          >
+            <div 
+              className="bg-slate-900 border border-slate-800 rounded-lg p-6 max-w-md w-full mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="w-8 h-8 text-emerald-400" />
+                </div>
+                <h3 className="text-xl font-serif font-bold text-white mb-2">Secure Transactions</h3>
+                <p className="text-slate-300 mb-6">
+                  All transactions on the Zhane Consulting platform are secured with:
+                </p>
+                <div className="space-y-3 text-left mb-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                    <span className="text-slate-300 text-sm">Multi-signature wallet security</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                    <span className="text-slate-300 text-sm">Smart contract audits</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                    <span className="text-slate-300 text-sm">Real-time transaction monitoring</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                    <span className="text-slate-300 text-sm">Insurance coverage</span>
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => setShowTxStatus(false)}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

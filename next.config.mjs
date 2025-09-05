@@ -9,6 +9,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Ensure proper routing
+  trailingSlash: false,
+  // Disable static optimization for dynamic content
+  staticPageGenerationTimeout: 120,
 }
 
 export default nextConfig

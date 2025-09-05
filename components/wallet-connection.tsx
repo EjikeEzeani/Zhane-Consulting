@@ -13,23 +13,40 @@ interface WalletConnectionProps {
 }
 
 export function WalletConnection({ className }: WalletConnectionProps) {
-  const { isConnected, isConnecting, account, chainId, balance, connectWallet, disconnectWallet, switchNetwork } =
+  const { isConnected, account, chainId, connectWallet, disconnectWallet, switchNetwork } =
     useWeb3()
 
   const [showWalletModal, setShowWalletModal] = useState(false)
   const [showNetworkModal, setShowNetworkModal] = useState(false)
+  const [isConnecting, setIsConnecting] = useState(false)
 
   const currentNetwork = SUPPORTED_CHAINS.find((chain) => chain.chainId === chainId)
   const isUnsupportedNetwork = chainId && !currentNetwork
 
   const handleConnect = async () => {
     try {
+      setIsConnecting(true)
       await connectWallet()
       setShowWalletModal(false)
       toast.success("Wallet connected successfully!")
     } catch (error: any) {
       console.error("Connection error:", error)
-      toast.error(error.message || "Failed to connect wallet")
+      
+      // Provide more specific error messages
+      let errorMessage = "Failed to connect wallet"
+      if (error.message.includes("MetaMask is not installed")) {
+        errorMessage = "Please install MetaMask first"
+      } else if (error.message.includes("User rejected")) {
+        errorMessage = "Connection was rejected by user"
+      } else if (error.message.includes("No accounts found")) {
+        errorMessage = "No wallet accounts found"
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
+      toast.error(errorMessage)
+    } finally {
+      setIsConnecting(false)
     }
   }
 
@@ -69,11 +86,10 @@ export function WalletConnection({ className }: WalletConnectionProps) {
       <>
         <Button
           onClick={() => setShowWalletModal(true)}
-          disabled={isConnecting}
           className={`bg-emerald-600 hover:bg-emerald-700 text-white font-medium ${className}`}
         >
           <Wallet className="w-4 h-4 mr-2" />
-          {isConnecting ? "Connecting..." : "Connect Wallet"}
+          Connect Wallet
         </Button>
 
         <Dialog open={showWalletModal} onOpenChange={setShowWalletModal}>
@@ -144,7 +160,7 @@ export function WalletConnection({ className }: WalletConnectionProps) {
           <div className="w-2 h-2 bg-emerald-400 rounded-full" />
           <div className="text-sm">
             <div className="font-medium">{formatAddress(account!)}</div>
-            <div className="text-slate-400 text-xs">{formatBalance(balance)} ETH</div>
+            <div className="text-slate-400 text-xs">0.0000 ETH</div>
           </div>
           <Button variant="ghost" size="sm" onClick={copyAddress}>
             <Copy className="w-3 h-3" />

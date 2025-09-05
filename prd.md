@@ -89,7 +89,7 @@ Contract Build/Deploy Output Contract
   "networkName": "sepolia",
   "contracts": {
     "ZCS_TOKEN": { "address": "0x...", "abi": [/* ABI */] },
-    "NAIRA_TOKEN": { "address": "0x...", "abi": [/* ABI */] },
+    "NAIRA_TOKEN": { "address": "0xDd7639e3920426de6c59A1009C7ce2A9802d0920", "abi": [/* ABI */] },
     "IDO_CONTRACT": { "address": "0x...", "abi": [/* ABI */] },
     "STAKING_CONTRACT": { "address": "0x...", "abi": [/* ABI */] }
   }

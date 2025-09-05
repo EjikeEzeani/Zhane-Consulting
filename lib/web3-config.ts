@@ -8,7 +8,7 @@ export const WEB3_CONFIG = {
     blockExplorer: "https://etherscan.io",
     contracts: {
       ZCS_TOKEN: "0x1234567890123456789012345678901234567890",
-      NAIRA_TOKEN: "0x2345678901234567890123456789012345678901",
+      NAIRA_TOKEN: "0xDd7639e3920426de6c59A1009C7ce2A9802d0920",
       IDO_CONTRACT: "0x3456789012345678901234567890123456789012",
       STAKING_CONTRACT: "0x4567890123456789012345678901234567890123",
     },
@@ -21,7 +21,7 @@ export const WEB3_CONFIG = {
     blockExplorer: "https://polygonscan.com",
     contracts: {
       ZCS_TOKEN: "0x5678901234567890123456789012345678901234",
-      NAIRA_TOKEN: "0x6789012345678901234567890123456789012345",
+      NAIRA_TOKEN: "0xDd7639e3920426de6c59A1009C7ce2A9802d0920",
       IDO_CONTRACT: "0x7890123456789012345678901234567890123456",
       STAKING_CONTRACT: "0x8901234567890123456789012345678901234567",
     },
@@ -34,7 +34,7 @@ export const WEB3_CONFIG = {
     blockExplorer: "https://sepolia.etherscan.io",
     contracts: {
       ZCS_TOKEN: "0x9012345678901234567890123456789012345678",
-      NAIRA_TOKEN: "0x0123456789012345678901234567890123456789",
+      NAIRA_TOKEN: "0xDd7639e3920426de6c59A1009C7ce2A9802d0920",
       IDO_CONTRACT: "0x1234567890123456789012345678901234567890",
       STAKING_CONTRACT: "0x2345678901234567890123456789012345678901",
     },
@@ -57,13 +57,13 @@ export const CONTRACT_ABIS = {
     "function name() view returns (string)",
   ],
   IDO_CONTRACT: [
-    "function buyTokens(uint256 nairaAmount) payable",
-    "function getTokenPrice() view returns (uint256)",
-    "function getUserInvestment(address user) view returns (uint256)",
-    "function getTotalRaised() view returns (uint256)",
-    "function getIdoEndTime() view returns (uint256)",
-    "function claimTokens()",
-    "function getClaimableAmount(address user) view returns (uint256)",
+    "function buy(uint256 amountB)",
+    "function owner() view returns (address)",
+    "function rate() view returns (uint256)",
+    "function tokenA() view returns (address)",
+    "function tokenB() view returns (address)",
+    "function withdrawTokenB()",
+    "function withdrawUnsoldTokenA()",
   ],
   STAKING_CONTRACT: [
     "function stake(uint256 amount)",

@@ -7,7 +7,7 @@ export const WEB3_CONFIG = {
     rpcUrl: "https://mainnet.infura.io/v3/YOUR_INFURA_KEY",
     blockExplorer: "https://etherscan.io",
     contracts: {
-      ZCS_TOKEN: "0x1234567890123456789012345678901234567890",
+      ZCS_TOKEN: "0x78F794133244999CE806B4c41e9Fd17143c0D506",
       NAIRA_TOKEN: "0xDd7639e3920426de6c59A1009C7ce2A9802d0920",
       IDO_CONTRACT: "0x3456789012345678901234567890123456789012",
       STAKING_CONTRACT: "0x4567890123456789012345678901234567890123",
@@ -33,9 +33,9 @@ export const WEB3_CONFIG = {
     rpcUrl: "https://sepolia.infura.io/v3/YOUR_INFURA_KEY",
     blockExplorer: "https://sepolia.etherscan.io",
     contracts: {
-      ZCS_TOKEN: "0x9012345678901234567890123456789012345678",
+      ZCS_TOKEN: "0x78F794133244999CE806B4c41e9Fd17143c0D506",
       NAIRA_TOKEN: "0xDd7639e3920426de6c59A1009C7ce2A9802d0920",
-      IDO_CONTRACT: "0x1234567890123456789012345678901234567890",
+      IDO_CONTRACT: "0x169624F443E57b4c128e9F7FB96Bc4c07D09b3b9",
       STAKING_CONTRACT: "0x2345678901234567890123456789012345678901",
     },
   },
@@ -57,7 +57,7 @@ export const CONTRACT_ABIS = {
     "function name() view returns (string)",
   ],
   IDO_CONTRACT: [
-    "function buy(uint256 amountB)",
+    "function buyTokens(uint256 amountB)",
     "function owner() view returns (address)",
     "function rate() view returns (uint256)",
     "function tokenA() view returns (address)",

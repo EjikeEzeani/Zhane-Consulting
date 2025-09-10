@@ -57,7 +57,7 @@ export const CONTRACT_ABIS = {
     "function name() view returns (string)",
   ],
   IDO_CONTRACT: [
-    "function buyTokens(uint256 amountB)",
+    "function buy(uint256 amountB)",
     "function owner() view returns (address)",
     "function rate() view returns (uint256)",
     "function tokenA() view returns (address)",
